@@ -101,7 +101,6 @@ foreach ($user in $usersList) {
     $EmployeeNumber = $user.indentification_number
     $EmployeeType = $user.employee_type
 
-    $Mail = $UserPrincipalName
     $OtherMailbox = $user.personal_email
 
     $AccountExpirationDate = (Get-Date).AddDays(365)
@@ -112,6 +111,7 @@ foreach ($user in $usersList) {
     if ($ADUser -eq $null) {
         $SAMAccountName = Set-SAMAccountName -first_name $user.first_name -last_name $user.last_name
         $UserPrincipalName = $SAMAccountName + "@" + "iam.local"
+        $Mail = $UserPrincipalName
         
         # Create User
         New-ADUser -name $SAMAccountName -SamAccountName $SAMAccountName -UserPrincipalName $UserPrincipalName -AccountPassword $Password -Enabled $true `
@@ -126,6 +126,10 @@ foreach ($user in $usersList) {
                 }
         Add-ADGroupMember -identity $roleGroup -Members $SAMAccountName
     } else {
+        $SAMAccountName = Set-SAMAccountName -first_name $user.first_name -last_name $user.last_name
+        $UserPrincipalName = $SAMAccountName + "@" + "iam.local"
+        $Mail = $UserPrincipalName
+        
         $attributesToReplace = @{
                     'EmployeeType'=$EmployeeType
                     'OtherMailbox'=$OtherMailbox
