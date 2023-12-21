@@ -32,7 +32,7 @@ foreach ($user_csv in $usersList)
 
     #expected user OU
     $roleTargetOU = "CN=$roleGroup,OU=Roles,OU=Groups,DC=iam,DC=local"
-    echo ("Expected target OU" + $roleTargetOU)
+    echo ("Expected target OU for user " +  $user.SAMAccountName + " - " + $roleTargetOU)
 
     $users_member_of =  (Get-ADUser -Identity $user.SAMAccountName -Properties MemberOf | Select-Object -ExpandProperty MemberOf)
 
@@ -42,9 +42,14 @@ foreach ($user_csv in $usersList)
         # If not remove it
         if ($user_group -ne $roleTargetOU) {
             Remove-ADGroupMember -Identity $user_group -Members $user.SAMAccountName -Confirm:$false
+            echo ("Removed user " +  $user.SAMAccountName + " from " + $user_group)
         }
 
     }
-
+    # Add to OU if not yet
+    if (-not ($users_member_of -contains $roleTargetOU)) {
+        Add-ADGroupMember -Identity $roleGroup -Members $user.SAMAccountName
+        echo ("User " +  $user.SAMAccountName + " Added to role group " + $user_group)
+    }
 }
 

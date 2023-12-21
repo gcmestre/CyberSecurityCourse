@@ -39,12 +39,12 @@ foreach ($user_csv in $usersList)
 
         foreach ($user_group in $user_groups) {
             Remove-ADGroupMember -Identity $user_group -Members $user.SAMAccountName -Confirm:$false
-            echo ("Removed user " +  ${$user.SAMAccountName} + "from " + $user_group)
+            echo ("Removed user " +  $user.SAMAccountName + " from " + $user_group)
         }
 
         # Disable user account
         Disable-ADAccount -Identity $user.SAMAccountName
-        echo ( ${$user.SAMAccountName} + "account disabled")
+        echo ( $user.SAMAccountName + " account disabled")
 
     }
 
